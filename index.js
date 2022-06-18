@@ -2,18 +2,30 @@ const inquirer = require('inquirer')
 const mysql = require('mysql2')
 
  let db = mysql.createConnection({
-     host: 'localhost',
-     username: 'root',
+     host: '127.0.0.1',
+     user: 'root',
      password: 'Hannah@5',
-    // port: '3306',
+     port: '3306',
      database: 'employee_db',
+     dialect: 'mysql'
  })
 
- db.connect(function(err){
-    if(err) throw err
- });
 
-const introQuestions = [
+ const doMore = () => {
+    inquirer.prompt({
+        type: "confirm",
+        name: "continue",
+        message: "Would you like to continue?"
+    }).then(ans => {
+        if (ans.continue){
+            introQuestions()
+        } else {
+            process.exit(1)
+        }
+    })
+}
+const introQuestions = () => {
+    inquirer.prompt([
     {
         type: 'list',
         name: 'toDo',
@@ -29,20 +41,23 @@ const introQuestions = [
             "Nothing, I'm all done",
         ]
     },
-]
-
-inquirer.prompt(introQuestions)
-.then(answers =>{
+]).then(answers =>{
     console.log(answers.toDo);
     if(answers.toDo === 'View all departments'){
         db.connect(function(err){
-            if(err) throw err
-        },db.query(`GET * FROM department`).then(result => {
-            console.table(result)
-        }))
-        inquirer.prompt(introQuestions)
+            if(err) throw err;
+            db.query(`SELECT * FROM department`, function(err, result){
+                if(err) throw err;
+                console.table(result)
+            }) 
+        })
+       doMore()
     }
 })
+}
+
+introQuestions()
+
 // const addDepartmentQuestions = [
 // {
 //     type: 'input',
