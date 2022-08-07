@@ -1,30 +1,49 @@
-DROP DATABASE IF EXISTS employee_db;
-CREATE DATABASE employee_db;
+DROP DATABASE IF EXISTS employees_db;
+CREATE DATABASE employees_db;
 
-USE employee_db;
+USE employees_db;
 
 CREATE TABLE department (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(30) UNIQUE NOT NULL
+    id INT NOT NULL AUTO_INCREMENT,
+    department_name VARCHAR(30) NOT NULL,
+    PRIMARY KEY (id)
 );
 
-CREATE TABLE role (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(30) UNIQUE NOT NULL,
-  salary DECIMAL UNSIGNED NOT NULL,
-  department_id INT UNSIGNED NOT NULL,
-  INDEX dep_ind (department_id),
-  CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
+CREATE TABLE roles (
+    id INT NOT NULL AUTO_INCREMENT,
+    title VARCHAR(30),
+    salary DECIMAL(10,2),
+    department_id INT, 
+    FOREIGN KEY (department_id) REFERENCES department (id) ON DELETE CASCADE,
+    PRIMARY KEY (id)
 );
 
- CREATE TABLE employee (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(30) NOT NULL,
-  last_name VARCHAR(30) NOT NULL,
-  role_id INT UNSIGNED NOT NULL,
-  INDEX role_ind (role_id),
-  CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
-  manager_id INT UNSIGNED,
-  INDEX man_ind (manager_id),
-  CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
+CREATE TABLE employees (
+    id INT NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id INT NOT NULL,
+    manager_id INT NULL,
+    FOREIGN KEY (manager_id) REFERENCES employees (id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE,
+    PRIMARY KEY (id)
 );
+
+INSERT INTO department (dept_name)
+VALUES ('Human Resources'),
+('Engineering'),
+('Financial'),
+('IT');
+
+
+INSERT INTO roles (title, salary, department_id)
+VALUES ('PR Rep', 75000, 1),
+('Developer', 105000, 2),
+('CFO', 108000, 3),
+('CTO', 550000, 4);
+
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ('Jane', 'Foster', 1, NULL),
+('Tim', 'Allen', 2, 1),
+('Haley', 'Johnston', 4, NULL),
+('Wendy', 'Bird', 3, 4);
