@@ -135,6 +135,7 @@ addDepartment = () => {
 };
 
 addRole = () => {
+    let choices = ["Human Resources", "Engineering", "Financial", "IT", "f", "coolDept"]
         inquirer.prompt([
             {
                 name: 'title',
@@ -150,11 +151,11 @@ addRole = () => {
                 name: 'department',
                 type: 'list',
                 message: 'What department does the new role belong to?',
-                choices: ["Human Resources", "Engineering", "Financial", "IT", "f", "coolDept"]
-            }
+                choices: choices
+                        }
         ]).then((answer) => {
 
-                db.query(`INSERT INTO roles (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}, ${answer.department});`,(err) => {
+                db.query(`INSERT INTO roles (title, salary, department_id) VALUES ('${answer.title}', ${answer.salary}, ${choices.indexOf(answer.department)+1});`,(err) => {
                     if(err) throw err; 
 
                     next();
